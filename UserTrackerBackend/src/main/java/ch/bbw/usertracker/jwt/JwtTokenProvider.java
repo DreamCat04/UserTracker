@@ -36,7 +36,7 @@ public class JwtTokenProvider {
 				.setClaims(claims)
 				.setIssuedAt(now)
 				.setExpiration(validity)
-				.signWith(key, SignatureAlgorithm.HS256)
+				.signWith(SignatureAlgorithm.HS256, key)
 				.compact();
 	}
 	
@@ -46,7 +46,7 @@ public class JwtTokenProvider {
 	
 	public boolean validateToken(String token) {
 		try {
-			Jws<Claims> claims = Jwts.parser().setSigningKey(key).parse(String.valueOf(key)).parseClaimsJws(token);
+			Jws<Claims> claims = (Jws<Claims>) Jwts.parser().setSigningKey(key).parse(String.valueOf(token));
 			return !claims.getBody().getExpiration().before(new Date());
 		} catch (JwtException | IllegalArgumentException e) {
 			throw new JwtException("Expired or invalid JWT token" + e.getMessage());
